@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chase the Image</title>
+    <style>
+        body {
+            background-color: #FFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #chaseButton {
+            width: 70px; /* Set width */
+            height: 60px; /* Set height */
+            cursor: pointer;
+            position: absolute;
+            transition: left 0.5s ease, top 0.5s ease, transform 0.3s ease; /* Smooth transition */
+            border: none; /* Ensure no border */
+            background: none; /* Remove any background */
+        }
+
+        #chaseButton:hover {
+            transform: scale(1.1); /* Slightly enlarge on hover */
+        }
+    </style>
+</head>
+<body>
+
+<img id="chaseButton" src="button.png" alt="Chase Me">
+
+<script>
+    const button = document.getElementById('chaseButton');
+    const snapDistance = 200; // Distance within which the button snaps away
+    const snapCooldown = 200; // Cooldown period in milliseconds (0.2 seconds)
+    let posX = Math.random() * (window.innerWidth - 60);
+    let posY = Math.random() * (window.innerHeight - 60);
+    let canSnap = true; // Flag to control snapping
+    let isSnapping = false; // Flag to control current snapping state
+
+    const moveButton = () => {
+        button.style.left = `${posX}px`;
+        button.style.top = `${posY}px`;
+    };
+
+    const snapButton = () => {
+        if (canSnap) {
+            posX = Math.random() * (window.innerWidth - 60);
+            posY = Math.random() * (window.innerHeight - 60);
+            moveButton();
+            canSnap = false; // Disable snapping
+            isSnapping = true; // Start snapping
+
+            // Re-enable snapping after the cooldown
+            setTimeout(() => {
+                canSnap = true; // Re-enable snapping
+                isSnapping = false; // Reset snapping state
+            }, snapCooldown);
+        }
+    };
+
+    // Check for mouse proximity to the button
+    document.addEventListener('mousemove', (event) => {
+        const buttonRect = button.getBoundingClientRect();
+        const buttonCenterX = buttonRect.x + buttonRect.width / 2;
+        const buttonCenterY = buttonRect.y + buttonRect.height / 2;
+
+        const dx = event.clientX - buttonCenterX;
+        const dy = event.clientY - buttonCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Allow snapping only if not currently snapping
+        if (distance < snapDistance && !isSnapping) {
+            snapButton();
+        }
+    });
+
+    // Initialize button position
+    moveButton();
+</script>
+
+</body>
+</html>
